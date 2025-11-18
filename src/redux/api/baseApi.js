@@ -9,6 +9,10 @@ const baseQuery = fetchBaseQuery({
     if (token && typeof token === "string") {
       headers.set("Authorization", `${token}`);
     }
+    const forgetPasswordToken = localStorage.getItem("forgetPasswordToken");
+    if (forgetPasswordToken) {
+      headers.set("Authorization", forgetPasswordToken);
+    }
     return headers;
   },
 });

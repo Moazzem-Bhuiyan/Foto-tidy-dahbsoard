@@ -1,25 +1,44 @@
 "use client";
-
-import { LogoSvg } from "@/assets/logos/LogoSvg";
 import FormWrapper from "@/components/Form/FormWrapper";
 import UInput from "@/components/Form/UInput";
+import { useResetPasswordMutation } from "@/redux/api/authApi";
 import { resetPassSchema } from "@/schema/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "antd";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React from "react";
+import toast from "react-hot-toast";
 
 export default function SetPasswordForm() {
-  const onSubmit = (data) => {
-    console.log(data);
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  const params = useSearchParams();
+  const email = params.get("email");
+
+  const onSubmit = async (data) => {
+    const payload = {
+      ...data,
+      email: email,
+    };
+    try {
+      const res = await resetPassword(payload).unwrap();
+      if (res?.success) {
+        toast.success(res?.message || "Password reset successfully");
+        localStorage.removeItem("forgetPasswordToken");
+        router.push("/login");
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || "Something went wrong");
+    }
   };
 
   return (
     <div className="px-6 py-8">
       <Link
         href="/login"
-        className="text-primary-blue flex-center-start gap-x-2 font-medium hover:text-primary-blue/85 mb-4"
+        className="flex-center-start mb-4 gap-x-2 font-medium text-primary-blue hover:text-primary-blue/85"
       >
         <ArrowLeft size={18} /> Back to login
       </Link>
@@ -36,7 +55,8 @@ export default function SetPasswordForm() {
           type="password"
           placeholder="*************"
           size="large"
-          className="!h-10 !mb-0"
+          className="!mb-0 !h-10"
+          labelStyles={{ color: "white" }}
         />
 
         <UInput
@@ -45,13 +65,16 @@ export default function SetPasswordForm() {
           type="password"
           placeholder="*************"
           size="large"
-          className="!h-10 !mb-0"
+          labelStyles={{ color: "white" }}
+          className="!mb-0 !h-10"
         />
 
         <Button
           type="primary"
           size="large"
-          className="w-full !font-semibold !h-10"
+          className="!h-10 w-full !font-semibold"
+          htmlType="submit"
+          loading={isLoading}
         >
           Submit
         </Button>
