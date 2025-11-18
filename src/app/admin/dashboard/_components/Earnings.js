@@ -1,0 +1,107 @@
+"use client";
+
+import { DatePicker, Select } from "antd";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { useState } from "react";
+import moment from "moment";
+
+const EarningSummary = ({ earningOverview, onYearChange }) => {
+  const [selectedYear, setSelectedYear] = useState(null);
+
+  const data =
+    earningOverview?.map((item) => ({
+      month: item.month,
+      user: item.total,
+    })) || [];
+
+  const handleChange = (date, dateString) => {
+    // Date string will contain the selected year
+    setSelectedYear(dateString);
+    onYearChange(dateString);
+  };
+
+  return (
+    <div className="max-w-8xl mx-auto w-full rounded-lg bg-white p-6 shadow-lg">
+      <div className="mb-10 flex items-center justify-between gap-2 lg:flex-wrap xl:flex-nowrap">
+        <h1 className="text-xl font-bold">Earning summary</h1>
+
+        <div className="space-x-3">
+          <DatePicker
+            value={selectedYear ? moment(selectedYear, "YYYY") : null}
+            onChange={handleChange}
+            picker="year"
+            placeholder="Select Year"
+            style={{ width: 120 }}
+          />
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={375}>
+        <BarChart
+          data={data}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 20,
+          }}
+          barSize={20}
+        >
+          {/* Define Gradient */}
+          <defs>
+            <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#EC901F" stopOpacity={1} />
+              <stop offset="100%" stopColor="#E47637" stopOpacity={1} />
+            </linearGradient>
+          </defs>
+
+          <XAxis
+            dataKey="month"
+            scale="point"
+            padding={{ left: 10, right: 10 }}
+            tickMargin={10}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis axisLine={false} tickLine={false} tickMargin={20} />
+
+          <Tooltip
+            formatter={(value) => [`Monthly Earnings: ${value}`]}
+            contentStyle={{
+              color: "var(--primary-green)",
+              fontWeight: "500",
+              borderRadius: "5px",
+              border: "0",
+            }}
+          />
+
+          <CartesianGrid
+            opacity={0.2}
+            horizontal={true}
+            vertical={false}
+            stroke="#080E0E"
+            strokeDasharray="3 3"
+          />
+
+          <Bar
+            barSize={35}
+            radius={5}
+            background={false}
+            dataKey="user"
+            fill="url(#colorGradient)"
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export default EarningSummary;
