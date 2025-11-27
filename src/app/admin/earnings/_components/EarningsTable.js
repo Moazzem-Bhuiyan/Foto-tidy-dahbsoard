@@ -10,6 +10,7 @@ import { Tag } from "antd";
 import EarningModal from "./EarningModal";
 import { useGetAllEarningsQuery } from "@/redux/api/earningsApi";
 import moment from "moment";
+import CustomCountUp from "@/components/CustomCountUp/CustomCountUp";
 
 export default function EarningsTable() {
   const [showEarningModal, setShowEarningModal] = useState(false);
@@ -28,12 +29,12 @@ export default function EarningsTable() {
   // stats data
   const earningStats = [
     {
-      key: "total",
+      key: "earnings",
       title: "Total Earnings",
       amount: earnings?.data?.totalEarning || 0,
     },
     {
-      key: "total",
+      key: "purchased",
       title: "Subscription Purchased",
       amount: earnings?.data?.subscriptionPurchased || 0,
     },
@@ -112,9 +113,18 @@ export default function EarningsTable() {
             )}
           >
             <ArrowRightLeft size={24} />
-            <p>
-              {stat.title}
-              <span className="pl-3 text-xl font-semibold">${stat.amount}</span>
+            <p className="flex gap-x-3">
+              <p>{stat.title}</p>
+              {stat.key !== "earnings" ? (
+                <span>
+                  {" "}
+                  <CustomCountUp end={stat.count} />
+                </span>
+              ) : (
+                <span>
+                  $ <CustomCountUp end={stat.count} />
+                </span>
+              )}
             </p>
           </div>
         ))}
@@ -132,7 +142,7 @@ export default function EarningsTable() {
             current: currentPage,
             onChange: (page) => setCurrentPage(page),
             pageSize: 10,
-            total: earnings?.data?.meta?.total || 0,
+            total: earnings?.meta?.total || 0,
             showTotal: (total) => `Total ${total} earnings`,
           }}
         ></Table>
