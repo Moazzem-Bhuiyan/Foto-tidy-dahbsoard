@@ -1,5 +1,4 @@
 "use client";
-
 import { ConfigProvider, Table } from "antd";
 import clsx from "clsx";
 import { ArrowRightLeft } from "lucide-react";
@@ -118,11 +117,11 @@ export default function EarningsTable() {
               {stat.key !== "earnings" ? (
                 <span>
                   {" "}
-                  <CustomCountUp end={stat.count} />
+                  <CustomCountUp end={stat.amount} />
                 </span>
               ) : (
                 <span>
-                  $ <CustomCountUp end={stat.count} />
+                  $ <CustomCountUp end={stat.amount} />
                 </span>
               )}
             </p>
