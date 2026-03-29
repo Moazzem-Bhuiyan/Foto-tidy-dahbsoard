@@ -28,7 +28,6 @@ export default function ForgotPassForm() {
         toast.error("Something went wrong");
       }
     }
-    router.push(`/otp-verification?email=${data.email}`);
   };
 
   return (

@@ -7,12 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "antd";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
 
 export default function SetPasswordForm() {
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const router = useRouter();
 
   const params = useSearchParams();
   const email = params.get("email");
@@ -20,17 +21,21 @@ export default function SetPasswordForm() {
   const onSubmit = async (data) => {
     const payload = {
       ...data,
-      email: email,
+      email,
     };
+
     try {
       const res = await resetPassword(payload).unwrap();
+
       if (res?.success) {
-        toast.success(res?.message || "Password reset successfully");
+        toast.success(res?.message || "Password reset successful!");
         localStorage.removeItem("forgetPasswordToken");
         router.push("/login");
       }
     } catch (error) {
-      toast.error(error?.data?.message || "Something went wrong");
+      if (error?.data?.message) {
+        toast.error(error.data.message);
+      }
     }
   };
 
